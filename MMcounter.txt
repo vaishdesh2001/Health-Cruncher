@@ -1,0 +1,99 @@
+; Name: Vaishnavi Deshpande
+; Date: 11/30
+;
+; Mark the boxes below [X] by replacing the space with an X as in [X]
+;
+; [X] I certify that the code herein is my own authorship - 
+;     I have not used anyone else's code (in whole of in part) for my modifications,
+;     and I have not shared my code in any form with anyone else.
+;
+; Enhancements (see homework 7 for full details)
+; [X] 1. modified output completed
+; [X] 2. modified loop termination completed
+; [X] 3. modified search color completed
+; [X] 4. BONUS user input case insensitve completed
+; [ ] 5. BONUS M&M string case insensitve completed
+; [ ] 6. BONUS display 2 digit count completed
+;
+; GREEN M&M COUNTER
+; -----------------
+; Copyright (c) 2020 Jim Skrentny - All Rights Reserved
+; Posting this publically is prohibited.
+;
+; M&M's are represented using ASCII characters: 'r' = red, 'g' = green, ...
+; Cup of M&M's is represented as a string of characters.
+; Count of green M&M's is displayed on the console.
+; WARNING: Program can only display a single digit count!
+;
+; INITIALIZE
+; **********
+	.ORIG	x3000
+	LDR	R1, R3, #0	; R1 - current M&M to check
+	AND	R2, R2, #0	; R2 - count of green M&M's, initially 0
+	LEA	R3, CUPstr	; R3 - address of cup of M&M's
+	ADD	R3, R3, #-1	; so that increment on NEXTmm doesn't skip the 1st char
+
+; ACCEPT INPUT FROM USER
+; *******************
+	LEA R0, PROMPT
+	PUTS
+	GETC
+	OUT
+	ADD R0, R0, #0
+	NOT R0, R0		; 2's complement negation step 1
+	ADD R0, R0, #1		; 2's complement negation step 2
+;	
+; CONVERTING CASE
+; *******************
+	LD  R4, CAPVAL
+	LD  R5, CONVCAP
+CHECKC	ADD R4, R0, R4
+	BRnz MOREmm
+NOTC	ADD R0, R0, R5
+;
+; CHECK IF MORE M&M'S
+; *******************
+MOREmm	BRz	OUTPUT		; if cup empty, then output count
+;
+; CHECK IF MATCH
+; **************
+	LD  R4, CAPVAL
+	NOT R4, R4		; 2's complement negation step 1
+	ADD R4, R4, #1		; 2's complement negation step 2
+	LD  R5, CHNGCAP 
+	ADD R4, R1, R4
+	BRp TEST
+	ADD R1, R1, R5
+TEST	ADD	R1, R1, R0	; test if current M&M matches
+	BRnp	NEXTmm		; if wrong color, don't count it
+	ADD	R2, R2, #1	; otherwise count it
+;
+; GET NEXT M&M
+; ************
+NEXTmm	ADD	R3, R3, #1	; address of next M&M
+	LDR	R1, R3, #0	; get next M&M to check
+	BRnzp	MOREmm
+;
+; DISPLAY COUNT
+; *************
+OUTPUT	LD	R0, NEWLINE	; ensures output begins on new line														
+	OUT
+	LD	R0, OFFSET	; load the ASCII offset
+	ADD	R0, R0, R2	; convert count to ASCII
+	OUT			; display ASCII character in R0 bits 0-7
+	LEA R0, SENT
+	PUTS
+	HALT
+;
+; MEMORY INITIALIZATIONS
+; **********************
+COLOR	.FILL	xFF99		; 'g'reen color to count (negated for comparison)
+OFFSET	.FILL	x30		; offset to digits
+CAPVAL 	.FILL	x0061		; ASCII value of the first lowercase letter
+CONVCAP .FILL	xFFE0		; -20 to be added to convert negated ASCII to lower case
+CHNGCAP .FILL	x0020		; 20 to be added to convert ASCII to lower case
+PROMPT	.STRINGZ "Enter the color to count "
+SENT	.STRINGZ " matches were found."
+CUPstr	.STRINGZ "BrgygbbyrbggryyyggGGG"	; "Cup" of M&M's  - CHANGE FOR YOUR OWN TESTS
+NEWLINE	.FILL	x000A
+	.END
