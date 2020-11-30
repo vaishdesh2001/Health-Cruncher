@@ -12,7 +12,7 @@
 ; [X] 2. modified loop termination completed
 ; [X] 3. modified search color completed
 ; [X] 4. BONUS user input case insensitve completed
-; [ ] 5. BONUS M&M string case insensitve completed
+; [X] 5. BONUS M&M string case insensitve completed
 ; [ ] 6. BONUS display 2 digit count completed
 ;
 ; GREEN M&M COUNTER
